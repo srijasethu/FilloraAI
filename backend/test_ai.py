@@ -14,6 +14,7 @@ Run with:
 
 import sys
 import json
+from pathlib import Path
 
 # Force UTF-8 output so emoji print correctly on Windows terminals
 if hasattr(sys.stdout, "reconfigure"):
@@ -21,32 +22,24 @@ if hasattr(sys.stdout, "reconfigure"):
 
 from ai_brain import answer_questions
 
-# ── Sample profile (edit to match your profile.json for realistic output) ─────
-SAMPLE_PROFILE = {
-    "full_name": "Arjun Sharma",
-    "roll_number": "2022-CS-047",
-    "department": "Computer Science and Engineering",
-    "year": "3rd Year",
-    "college": "National Institute of Technology, Warangal",
-    "email": "arjun.sharma@nitw.ac.in",
-    "phone": "+91-9876543210",
-    "gender": "Male",
-    "dob": "15/08/2003",
-    "city": "Warangal",
-    "writing_samples": [
-        "I chose Computer Science because I've always been fascinated by how software shapes the world around us. From building small scripts in high school to working on real projects in college, I genuinely enjoy the problem-solving aspect of coding — that moment when something finally clicks and works is what keeps me going.",
-        "I work best in team environments where everyone pitches in honestly. During our semester project, I took on the backend integration because no one else was comfortable with APIs. It was challenging, but breaking it into smaller tasks made it manageable. I'd say my biggest strength is staying calm when things break — and they always do.",
-        "The workshop on cloud computing really changed how I think about scalability. Before attending, I assumed servers were just 'big computers somewhere'. Learning about load balancing and containerization gave me a completely new perspective on how modern applications actually run in production."
-    ],
-    "custom_facts": {
-        "hobbies": ["competitive programming", "reading tech blogs", "badminton"],
-        "technical_skills": ["Python", "JavaScript", "React", "SQL", "Git"],
-        "career_goal": "To work as a software engineer at a product-based company and eventually build my own startup.",
-        "why_this_event": "I want to learn from industry professionals and network with peers who share the same passion for technology.",
-        "dietary_preference": "Vegetarian",
-        "tshirt_size": "M",
-    }
-}
+
+def load_profile() -> dict:
+    """
+    Load the real profile.json from the backend folder.
+    This ensures test_ai.py always uses the same data as the live server.
+    """
+    profile_path = Path(__file__).parent / "profile.json"
+    if not profile_path.exists():
+        raise FileNotFoundError(
+            f"profile.json not found at {profile_path}. "
+            "Please fill it in before running this test."
+        )
+    with open(profile_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+# ── The real profile is loaded inside run_test() via load_profile() ────────────
+# No hardcoded profile data lives here. The source of truth is backend/profile.json.
 
 # ── 6 sample questions covering all major types and statuses ──────────────────
 SAMPLE_QUESTIONS = [
@@ -120,13 +113,21 @@ SAMPLE_QUESTIONS = [
 
 
 def run_test():
+    # Load the real profile.json — same file the server uses
+    try:
+        profile = load_profile()
+    except FileNotFoundError as e:
+        print(f"ERROR: {e}")
+        return
+
     print("=" * 70)
     print("  FilloraAI - AI Brain Test")
     print("=" * 70)
-    print(f"\nSending {len(SAMPLE_QUESTIONS)} questions to Gemini...\n")
+    print(f"  Profile loaded: {profile.get('full_name', '?')} | {profile.get('roll_number', '?')}")
+    print(f"  Sending {len(SAMPLE_QUESTIONS)} questions to Gemini...\n")
 
     try:
-        answers = answer_questions(SAMPLE_QUESTIONS, SAMPLE_PROFILE)
+        answers = answer_questions(SAMPLE_QUESTIONS, profile)
     except Exception as e:
         print(f"\nERROR: {e}")
         return

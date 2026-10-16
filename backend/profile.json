@@ -1,35 +1,50 @@
 {
-  "full_name": "Your Full Name",
-  "roll_number": "20XX-CS-XXX",
-  "department": "Computer Science and Engineering",
+  "full_name": "R S SRIJA SETHU",
+  "roll_number": "73152413198",
+  "register_number": "73152413198",
+  "Degree": "B.E",
+  "Branch": "Computer Science and Engineering",
   "year": "3rd Year",
-  "college": "Your College Name",
-  "email": "yourname@college.edu",
-  "phone": "+91-XXXXXXXXXX",
-  "gender": "Male",
-  "dob": "DD/MM/YYYY",
-  "city": "Your City",
-
+  "college": "K.S.R College Of Engineering",
+  "email": "sethusrija@gmail.com",
+  "domainmail": "sethusrijacse24_27@ksrce.ac.in",
+  "phone": "+91-9150940181",
+  "cgpa": "8.84",
+  "tenth_percentage": "83%",
+  "twelfth_percentage": "77%",
+  "residence_type": "Day scholar (lives outside college)",
+  "hostel_or_day_scholar": "Day scholar",
+  "gender": "Female",
+  "dob": "11/08/2006",
+  "city": "Tiruchengode",
   "writing_samples": [
     "I chose Computer Science because I've always been fascinated by how software shapes the world around us. From building small scripts in high school to working on real projects in college, I genuinely enjoy the problem-solving aspect of coding — that moment when something finally clicks and works is what keeps me going.",
     "I work best in team environments where everyone pitches in honestly. During our semester project, I took on the backend integration because no one else was comfortable with APIs. It was challenging, but breaking it into smaller tasks made it manageable. I'd say my biggest strength is staying calm when things break — and they always do.",
-    "The workshop on cloud computing really changed how I think about scalability. Before attending, I assumed servers were just 'big computers somewhere'. Learning about load balancing and containerization gave me a completely new perspective on how modern applications actually run in production."
+    "I am a quick learner and can pick up new technologies easily. I am also a team player and enjoy working in a collaborative environment."
   ],
-
   "custom_facts": {
-    "hobbies": ["competitive programming", "reading tech blogs", "badminton"],
-    "technical_skills": ["Python", "JavaScript", "React", "SQL", "Git"],
-    "languages_known": ["English", "Hindi", "Telugu"],
-    "achievements": [
-      "Top 10% in college coding contest",
-      "Completed Google's Python crash course"
+    "hobbies": [
+      "Leetcode",
+      "listening to music",
+      "drawing"
     ],
-    "clubs": ["Coding Club", "NSS"],
-    "career_goal": "To work as a software engineer at a product-based company and eventually build my own startup.",
-    "why_this_event": "I want to learn from industry professionals and network with peers who share the same passion for technology.",
-    "dietary_preference": "Vegetarian",
+    "technical_skills": [
+      "Python",
+      "JavaScript",
+      "React",
+      "SQL",
+      "Git",
+      "Java"
+    ],
+    "languages_known": [
+      "English",
+      "Hindi",
+      "Malayalam",
+      "Tamil"
+    ],
+    "career_goal": "To work in a product based company which would offer me a good pay and good work life balance.",
     "tshirt_size": "M",
-    "linkedin": "https://linkedin.com/in/yourprofile",
-    "github": "https://github.com/yourusername"
+    "linkedin": "https://www.linkedin.com/in/srija-sethu-r-s-b64188328?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+    "github": "https://github.com/srijasethu"
   }
 }

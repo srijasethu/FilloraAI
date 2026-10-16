@@ -86,24 +86,31 @@ Each item must follow this exact structure:
 
 ## STATUS RULES — READ CAREFULLY
 
-**"confident"** — Use this when:
-- The answer is a clear fact found in the profile (name, roll no, department, year, phone, etc.)
-- For multiple_choice or dropdown: one option clearly matches the profile data
-- For checkbox: one or more options clearly apply to the student
-- The answer field should be the exact answer string (or a list for checkboxes).
+**"confident"** — Use this ONLY when the answer is a fact explicitly stated in the profile (name, roll number, email, phone, branch, year, cgpa, dob, city, college, tshirt_size, etc.). Rules:
+- The value must appear directly in profile.json. Do NOT infer or guess from indirect clues.
+- Example of FORBIDDEN inference: the profile has a github link → do NOT assume "I have a laptop" or "I have coding experience". Only mark confident if the profile has an explicit field for that fact.
+- For multiple_choice / dropdown: one option must match a profile field verbatim or near-verbatim.
+- For checkbox: only tick options that directly correspond to an explicit profile field.
+- The answer field must be the exact answer string (or a list for checkboxes).
 
-**"needs_review"** — Use this for descriptive / opinion questions (paragraph or short text asking for reasons, experience, opinions, introductions, motivations, etc.). Rules:
+**"needs_review"** — Use this when:
+- The answer requires a descriptive / opinion response (paragraph, short_text asking for reasons, experience, motivation, introduction, etc.).
+- The answer is a reasonable guess from profile data but not a verbatim fact (e.g. inferring "I have coding experience" from technical_skills list).
 - Write a natural, genuine-sounding draft in a real college student's voice.
 - DO NOT sound like a robot or use corporate language.
 - Study the "writing_samples" in the profile and imitate that tone and style.
 - Match the length hinted by the form (if hint says "2-3 sentences", write 2-3 sentences; if it says "100 words", stay under 100 words).
 - If no length hint is given, write 3-5 sentences — enough to be useful but not overwhelming.
+- In the "reason" field, explicitly note that the answer is a guess/draft and what assumption you made.
 - This is just a draft; the student will review and may edit it before submitting.
 
-**"needs_input"** — Use this when:
-- The profile does not contain the required information (e.g., consent, signature, declaration, specific personal info not provided).
+**"needs_input"** — MANDATORY for the following; no exceptions:
+- ANY question that is a declaration, consent, agreement, undertaking, terms and conditions, or signature. This includes questions containing phrases like "I hereby declare", "I hereby confirm", "I agree", "I consent", "I undertake", "terms and conditions", "declaration", "signature". Set answer to "" always.
+- The profile does not contain the required information and a guess is not appropriate.
 - NEVER invent facts that aren't in the profile. Leave the answer as an empty string "".
-- Examples: "I agree to the terms", signature fields, ID proof numbers not in profile.
+
+## DECLARATION / CONSENT — ABSOLUTE RULE
+If a question asks the student to agree, declare, confirm, sign, or consent to ANYTHING — even if the statement seems harmless or true — you MUST return status "needs_input" and answer "". The student must make this choice themselves. This rule overrides all other rules.
 
 ## ANSWER FORMAT RULES
 
@@ -115,10 +122,22 @@ Each item must follow this exact structure:
 - For **time**: answer in HH:MM format (24-hour).
 - If you're using **needs_input**, set answer to "".
 
-## IMPORTANT
+## STRICT FACTS RULE — THIS IS THE MOST IMPORTANT RULE
+You are ONLY allowed to use facts that appear word-for-word in the profile above.
+Specifically:
+- Skills: only those listed in custom_facts.technical_skills. Do NOT add any other skill.
+- Languages: only those listed in custom_facts.languages_known. Do NOT add any other language.
+- Hobbies: only those listed in custom_facts.hobbies. Do NOT add any other hobby.
+- Achievements: only those listed in custom_facts.achievements. Do NOT invent awards, ranks, or certifications.
+- Clubs: only those listed in custom_facts.clubs. Do NOT invent memberships.
+- Dietary preference: use exactly what is in custom_facts.dietary_preference or the top-level field. Do NOT guess.
+- For ANY fact not found in the profile: set status to "needs_input" and answer to "".
+- NEVER fill gaps with plausible-sounding invented information. An empty answer is always better than a wrong one.
+- For opinion/descriptive drafts (needs_review): you may write naturally, but only mention specific facts that are in the profile.
+
+## OUTPUT FORMAT
 - Return ONLY a valid JSON array. No markdown, no explanation text, no code fences.
 - The array length must match the number of questions exactly.
-- Do not make up personal facts that aren't in the profile.
 """.strip()
 
     return prompt
@@ -157,10 +176,65 @@ Return a single JSON object (not an array):
 Rules:
 - Match the student's voice from the profile's writing_samples.
 - Follow the form's hint about length if present.
+- STRICT FACTS: only mention skills, languages, hobbies, and achievements that appear explicitly in the profile. Never invent facts.
 - Return ONLY valid JSON. No markdown, no explanation outside the JSON.
 """.strip()
 
     return prompt
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  POST-PROCESSING SAFETY NET
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Keywords that identify declaration / consent / agreement questions.
+# If ANY of these appear in the question text the answer is ALWAYS needs_input.
+_DECLARATION_KEYWORDS = {
+    "declare", "declaration", "consent", "agree", "agreement",
+    "undertaking", "undertake", "terms", "signature", "hereby",
+    "confirm", "i accept", "i acknowledge",
+}
+
+
+def _apply_safety_net(questions: list[dict], answers: list[dict]) -> list[dict]:
+    """
+    Post-processing guard that runs AFTER Gemini returns.
+
+    Rules enforced here (regardless of what Gemini said):
+    1. If the question text contains any declaration/consent keyword,
+       force status="needs_input" and answer="".
+
+    This is a hard code-level guarantee — Gemini cannot override it.
+    """
+    # Build a quick lookup: question id → question text (lowercased)
+    q_text_map = {
+        q["id"]: q.get("question", "").lower()
+        for q in questions
+    }
+
+    patched = []
+    for ans in answers:
+        q_text = q_text_map.get(ans.get("id"), "")
+        is_declaration = any(kw in q_text for kw in _DECLARATION_KEYWORDS)
+
+        if is_declaration and ans.get("status") != "needs_input":
+            print(
+                f"[AiBrain][SafetyNet] Q{ans.get('id')} overridden to needs_input "
+                f"(declaration keyword detected in: '{q_text[:80]}...')"
+            )
+            patched.append({
+                "id": ans["id"],
+                "answer": "",
+                "status": "needs_input",
+                "reason": (
+                    "Safety net: this question contains a declaration/consent/agreement. "
+                    "The student must answer this themselves."
+                ),
+            })
+        else:
+            patched.append(ans)
+
+    return patched
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -261,6 +335,9 @@ def answer_questions(questions: list[dict], profile: dict) -> list[dict]:
         raise RuntimeError(f"[AiBrain] Expected a JSON array but got: {type(answers)}")
 
     print(f"[AiBrain] Got {len(answers)} answers from Gemini.")
+
+    # Apply code-level safety net (declaration/consent override)
+    answers = _apply_safety_net(questions, answers)
 
     # Summarize what we got
     for ans in answers:
