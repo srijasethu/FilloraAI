@@ -1,0 +1,36 @@
+# Git ignore file for FilloraAI backend
+
+# Environment variables (contains API keys!)
+.env
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Browser profile data (contains saved Google account sessions)
+browser_profiles/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log

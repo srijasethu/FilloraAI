@@ -1,0 +1,35 @@
+{
+  "full_name": "Your Full Name",
+  "roll_number": "20XX-CS-XXX",
+  "department": "Computer Science and Engineering",
+  "year": "3rd Year",
+  "college": "Your College Name",
+  "email": "yourname@college.edu",
+  "phone": "+91-XXXXXXXXXX",
+  "gender": "Male",
+  "dob": "DD/MM/YYYY",
+  "city": "Your City",
+
+  "writing_samples": [
+    "I chose Computer Science because I've always been fascinated by how software shapes the world around us. From building small scripts in high school to working on real projects in college, I genuinely enjoy the problem-solving aspect of coding — that moment when something finally clicks and works is what keeps me going.",
+    "I work best in team environments where everyone pitches in honestly. During our semester project, I took on the backend integration because no one else was comfortable with APIs. It was challenging, but breaking it into smaller tasks made it manageable. I'd say my biggest strength is staying calm when things break — and they always do.",
+    "The workshop on cloud computing really changed how I think about scalability. Before attending, I assumed servers were just 'big computers somewhere'. Learning about load balancing and containerization gave me a completely new perspective on how modern applications actually run in production."
+  ],
+
+  "custom_facts": {
+    "hobbies": ["competitive programming", "reading tech blogs", "badminton"],
+    "technical_skills": ["Python", "JavaScript", "React", "SQL", "Git"],
+    "languages_known": ["English", "Hindi", "Telugu"],
+    "achievements": [
+      "Top 10% in college coding contest",
+      "Completed Google's Python crash course"
+    ],
+    "clubs": ["Coding Club", "NSS"],
+    "career_goal": "To work as a software engineer at a product-based company and eventually build my own startup.",
+    "why_this_event": "I want to learn from industry professionals and network with peers who share the same passion for technology.",
+    "dietary_preference": "Vegetarian",
+    "tshirt_size": "M",
+    "linkedin": "https://linkedin.com/in/yourprofile",
+    "github": "https://github.com/yourusername"
+  }
+}
